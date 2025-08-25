@@ -8,63 +8,185 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            background: #e3f0ff; /* Light blue background */
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         #game-board {
             display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 10px;
+            grid-template-columns: repeat(3, 90px);
+            gap: 0;
             margin: 20px auto;
+            border: 4px solid #4f8ef7;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(79,142,247,0.10);
+            background: white;
         }
 
         .cell {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
+            margin: 5px;
             background-color: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
             cursor: pointer;
+            border-width: 4px;
+            border-style: solid;
+            box-sizing: border-box;
         }
+        .cell.cell-0 { border-color: #e57373; }   /* Red */
+        .cell.cell-1 { border-color: #f06292; }   /* Pink */
+        .cell.cell-2 { border-color: #ba68c8; }   /* Purple */
+        .cell.cell-3 { border-color: #64b5f6; }   /* Blue */
+        .cell.cell-4 { border-color: #4db6ac; }   /* Teal */
+        .cell.cell-5 { border-color: #81c784; }   /* Green */
+        .cell.cell-6 { border-color: #ffd54f; }   /* Yellow */
+        .cell.cell-7 { border-color: #ffb74d; }   /* Orange */
+        .cell.cell-8 { border-color: #a1887f; }   /* Brown */
 
         .cell:hover {
             background-color: #e0e0e0;
         }
 
         .cell.x {
-            color: rgb(162, 154, 4);
+            color: #a259e6; /* Purple for stars */
         }
 
         .cell.o {
-            color: rgb(12, 12, 12);
+            color: #ff69b4; /* Pink for hearts */
         }
 
-        #message, #next-player {
+        #message {
+            margin: 8px 0 24px 0;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #next-player {
             margin-top: 20px;
             font-size: 20px;
+        }
+
+        .scoreboard-label {
+            font-size: 22px;
+            font-weight: bold;
+            color: #4f8ef7;
+            background: #e3f0ff;
+            border: 2px solid #4f8ef7;
+            border-radius: 8px;
+            padding: 8px 24px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(79,142,247,0.10);
+            display: inline-block;
+            text-shadow: 1px 1px 2px #a1c4fd;
+        }
+        .scoreboard-divider {
+            border: none;
+            border-bottom: 2px solid #4f8ef7;
+            width: 160px;
+            margin: 0 auto 12px auto;
+        }
+        .restart-btn {
+            background: #4caf50;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid #388e3c;
+            border-radius: 6px;
+            padding: 4px 14px;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            box-shadow: 0 1px 4px rgba(76,175,80,0.10);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .restart-btn:hover {
+            background: #388e3c;
+            color: #fff;
+            border-color: #256029;
+            box-shadow: 0 2px 8px rgba(56,142,60,0.18);
+        }
+        @media (max-width: 600px) {
+            #game-board {
+                grid-template-columns: repeat(3, 60px);
+            }
+            .cell {
+                width: 50px;
+                height: 50px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Happy Birthday, Jean🥳!</h1>
-    <div id="game-board"></div>
-    <div id="next-player">Next Player: X</div>
-    <div id="message"></div>
-    <button id="restart">Restart Game... If You Dare 😈</button>
-
+    <div id="main-container">
+        <h1>Let's Play Tic-Tac-Toe, Anara!</h1>
+        <form id="player-form" style="margin-bottom: 18px;">
+            <input type="text" id="playerX" placeholder="Add Player 1's name" style="margin-right:8px;">
+            <input type="text" id="playerO" placeholder="Add Player 2's name" style="margin-right:8px;">
+            <button type="submit">Start Game</button>
+        </form>
+        <div class="scoreboard-label">🏆 Scoreboard</div>
+        <hr class="scoreboard-divider">
+        <div id="scoreboard" style="display: flex; justify-content: center; gap: 32px; margin-bottom: 18px;">
+            <div><span id="score-x">0</span> <span id="score-x-name">Player X</span></div>
+            <div><span id="score-o">0</span> <span id="score-o-name">Player O</span></div>
+        </div>
+        <button id="clear-score" style="background:#fff; color:#4f8ef7; border:2px solid #4f8ef7; border-radius:6px; font-size:14px; font-weight:bold; padding:6px 18px; margin-bottom:16px; cursor:pointer; transition:background 0.2s, color 0.2s;">Clear Score</button>
+        <div id="game-board"></div>
+        <div id="next-player">Next Player: X</div>
+        <div id="message"></div>
+        <div style="display: flex; justify-content: center; width: 100%; margin: 0 auto;">
+            <button id="restart" class="restart-btn">Restart Game</button>
+        </div>
+    </div>
     <script>
         const board = document.getElementById('game-board');
         const message = document.getElementById('message');
         const nextPlayer = document.getElementById('next-player');
         const restartButton = document.getElementById('restart');
+        const playerForm = document.getElementById('player-form');
+        const playerXInput = document.getElementById('playerX');
+        const playerOInput = document.getElementById('playerO');
+        const scoreX = document.getElementById('score-x');
+        const scoreO = document.getElementById('score-o');
+        const scoreXName = document.getElementById('score-x-name');
+        const scoreOName = document.getElementById('score-o-name');
+        let playerNames = { X: 'Player 1 (X)', O: 'Player 2 (O)' };
+        let scores = { X: 0, O: 0 };
         let currentPlayer = 'X';
         let gameState = ['', '', '', '', '', '', '', '', ''];
+        let aiEnabled = false;
+        let gameActive = true;
+        let winSound = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3');
+        let moveSound = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b6bfa.mp3');
 
         function createBoard() {
+            board.innerHTML = '';
             for (let i = 0; i < 9; i++) {
                 const cell = document.createElement('div');
-                cell.classList.add('cell');
+                cell.classList.add('cell', `cell-${i}`); // Add unique class for border color
                 cell.dataset.index = i;
                 cell.addEventListener('click', handleCellClick);
                 board.appendChild(cell);
@@ -73,27 +195,36 @@
 
         function handleCellClick(event) {
             const index = event.target.dataset.index;
-            if (gameState[index] !== '' || checkWinner()) return;
-
-            gameState[index] = currentPlayer;
-            event.target.textContent = currentPlayer;
-
-            // Apply class based on current player
-            if (currentPlayer === 'X') {
-                event.target.classList.add('x');
-            } else {
-                event.target.classList.add('o');
+            if (!gameActive || gameState[index] !== '' || checkWinner()) return;
+            makeMove(index, currentPlayer);
+            if (aiEnabled && gameActive && currentPlayer === 'O') {
+                setTimeout(aiMove, 500);
             }
-            
+        }
+
+        function makeMove(index, player) {
+            gameState[index] = player;
+            const cell = board.children[index];
+            cell.textContent = player;
+            cell.classList.remove('x', 'o');
+            cell.classList.add(player === 'X' ? 'x' : 'o', 'pop');
+            moveSound.currentTime = 0; moveSound.play();
+            setTimeout(() => cell.classList.remove('pop'), 300);
             if (checkWinner()) {
-                message.textContent = `${currentPlayer} wins! 🎉`;
-                nextPlayer.textContent = ''; // Clear next player note
+                message.textContent = `${playerNames[player]} wins! 🎉`;
+                highlightWin();
+                scores[player]++;
+                updateScores();
+                winSound.currentTime = 0; winSound.play();
+                gameActive = false;
+                nextPlayer.textContent = '';
             } else if (gameState.every(cell => cell !== '')) {
                 message.textContent = "It's a tie!";
-                nextPlayer.textContent = ''; // Clear next player note
+                gameActive = false;
+                nextPlayer.textContent = '';
             } else {
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-                nextPlayer.textContent = `Next Player: ${currentPlayer}`; // Update next player note
+                currentPlayer = player === 'X' ? 'O' : 'X';
+                nextPlayer.textContent = `Next Player: ${playerNames[currentPlayer]}`;
             }
         }
 
@@ -103,25 +234,88 @@
                 [0, 3, 6], [1, 4, 7], [2, 5, 8],
                 [0, 4, 8], [2, 4, 6]
             ];
-
-            return winningCombinations.some(combination => {
+            return winningCombinations.find(combination => {
                 const [a, b, c] = combination;
                 return gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c];
             });
         }
 
-        restartButton.addEventListener('click', () => {
-            gameState.fill('');
+        function highlightWin() {
+            const winCombo = checkWinner();
+            if (winCombo) {
+                winCombo.forEach(i => {
+                    const cell = board.children[i];
+                    cell.style.background = '#ffe082';
+                    cell.style.transition = 'background 0.4s';
+                    cell.classList.add('explode');
+                });
+                setTimeout(() => {
+                    winCombo.forEach(i => {
+                        board.children[i].classList.remove('explode');
+                    });
+                }, 1200);
+            }
+        }
+
+        function updateScores() {
+            scoreX.textContent = scores.X;
+            scoreO.textContent = scores.O;
+        }
+
+        function resetGame() {
+            gameState = ['', '', '', '', '', '', '', '', ''];
             currentPlayer = 'X';
-            Array.from(document.querySelectorAll('.cell')).forEach(cell => {
-                cell.textContent = '';
-                cell.classList.remove('x', 'o');  // Remove classes on restart
-            });
             message.textContent = '';
-            nextPlayer.textContent = `Next Player: ${currentPlayer}`; // Reset next player note
+            nextPlayer.textContent = `Next Player: ${playerNames[currentPlayer]}`;
+            gameActive = true;
+            createBoard();
+        }
+
+        restartButton.addEventListener('click', resetGame);
+
+        playerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            playerNames.X = playerXInput.value || 'Player 1 (X)';
+            playerNames.O = playerOInput.value || 'Player 2 (O)';
+            scoreXName.textContent = playerNames.X;
+            scoreOName.textContent = playerNames.O;
+            nextPlayer.textContent = `Next Player: ${playerNames[currentPlayer]}`;
+            resetGame();
         });
 
+        // AI opponent (random move)
+        function aiMove() {
+            let empty = gameState.map((v, i) => v === '' ? i : null).filter(i => i !== null);
+            if (empty.length === 0) return;
+            let move = empty[Math.floor(Math.random() * empty.length)];
+            makeMove(move, 'O');
+        }
+
+        // Toggle AI with double-click on Player 2 (O) name
+        scoreOName.addEventListener('dblclick', function() {
+            aiEnabled = !aiEnabled;
+            scoreOName.textContent = playerNames.O + (aiEnabled ? ' (AI)' : '');
+            resetGame();
+        });
+
+        // Animation for moves
+        const style = document.createElement('style');
+        style.textContent = `.pop { animation: pop 0.3s; } @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }\n.explode { animation: explode 1.2s cubic-bezier(.36,2,.6,.99) forwards; } @keyframes explode { 0% { transform: scale(1); opacity: 1; } 60% { transform: scale(2.5) rotate(20deg); opacity: 0.7; } 100% { transform: scale(0.1); opacity: 0; } }`;
+        document.head.appendChild(style);
+
+        // Responsive: already handled in CSS above
+
+        // Initialize
+        scoreXName.textContent = playerNames.X;
+        scoreOName.textContent = playerNames.O;
+        nextPlayer.textContent = `Next Player: ${playerNames[currentPlayer]}`;
         createBoard();
+
+        document.getElementById('clear-score').addEventListener('click', function() {
+            scores.X = 0;
+            scores.O = 0;
+            updateScores();
+        });
     </script>
 </body>
 </html>
