@@ -64,13 +64,9 @@
             background-color: #e0e0e0;
         }
 
-        .cell.x {
-            color: #a259e6; /* Purple for stars */
-        }
-
-        .cell.o {
-            color: #ff69b4; /* Pink for hearts */
-        }
+    /* Remove default .cell.x and .cell.o color so JS can control icon color */
+    .cell.x {}
+    .cell.o {}
 
         #message {
             margin: 8px 0 24px 0;
@@ -172,6 +168,28 @@
             <label><input type="radio" name="mode" value="pvp" checked> 2 Players</label>
             <label style="margin-left:18px;"><input type="radio" name="mode" value="ai"> Play vs Computer</label>
         </div>
+        <div id="icon-select" style="margin-bottom: 12px; display: flex; gap: 24px; justify-content: center; align-items: center;">
+            <div>
+                <label for="icon-x">X Icon:</label>
+                <select id="icon-x">
+                    <option value="X">X (Purple)</option>
+                    <option value="★">★ Star</option>
+                    <option value="🌟">🌟 Sparkle</option>
+                    <option value="🦄">🦄 Unicorn</option>
+                    <option value="😎">😎 Cool</option>
+                </select>
+            </div>
+            <div>
+                <label for="icon-o">O Icon:</label>
+                <select id="icon-o">
+                    <option value="O">O (Pink)</option>
+                    <option value="❤">❤ Heart</option>
+                    <option value="💎">💎 Diamond</option>
+                    <option value="🌈">🌈 Rainbow</option>
+                        <option value="🐶">🐶 Dog</option>
+                </select>
+            </div>
+        </div>
         <form id="player-form" style="margin-bottom: 18px;">
             <input type="text" id="playerX" placeholder="Add Player 1's name" style="margin-right:8px;">
             <input type="text" id="playerO" placeholder="Add Player 2's name" style="margin-right:8px;">
@@ -213,6 +231,9 @@
     let moveSound = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b6bfa.mp3');
     const modeSelect = document.getElementById('mode-select');
     const modeRadios = modeSelect.querySelectorAll('input[name="mode"]');
+    const iconXSelect = document.getElementById('icon-x');
+    const iconOSelect = document.getElementById('icon-o');
+    let icons = { X: iconXSelect.value, O: iconOSelect.value };
 
         function createBoard() {
             board.innerHTML = '';
@@ -221,6 +242,30 @@
                 cell.classList.add('cell', `cell-${i}`); // Add unique class for border color
                 cell.dataset.index = i;
                 cell.addEventListener('click', handleCellClick);
+                // If gameState already has a move, render icon
+                if (gameState[i]) {
+                    const icon = icons[gameState[i]];
+                    cell.classList.remove('x', 'o');
+                    if (gameState[i] === 'X') {
+                        cell.classList.add('x');
+                        if (icon === 'X') {
+                            cell.style.color = '#a259e6';
+                            cell.textContent = 'X';
+                        } else {
+                            cell.style.color = '';
+                            cell.textContent = icon;
+                        }
+                    } else {
+                        cell.classList.add('o');
+                        if (icon === 'O') {
+                            cell.style.color = '#ff69b4';
+                            cell.textContent = 'O';
+                        } else {
+                            cell.style.color = '';
+                            cell.textContent = icon;
+                        }
+                    }
+                }
                 board.appendChild(cell);
             }
         }
@@ -237,9 +282,28 @@
         function makeMove(index, player) {
             gameState[index] = player;
             const cell = board.children[index];
-            cell.textContent = player;
+            const icon = icons[player];
             cell.classList.remove('x', 'o');
-            cell.classList.add(player === 'X' ? 'x' : 'o', 'pop');
+            if (player === 'X') {
+                cell.classList.add('x');
+                if (icon === 'X') {
+                    cell.style.color = '#a259e6';
+                    cell.textContent = 'X';
+                } else {
+                    cell.style.color = '';
+                    cell.textContent = icon;
+                }
+            } else {
+                cell.classList.add('o');
+                if (icon === 'O') {
+                    cell.style.color = '#ff69b4';
+                    cell.textContent = 'O';
+                } else {
+                    cell.style.color = '';
+                    cell.textContent = icon;
+                }
+            }
+            cell.classList.add('pop');
             moveSound.currentTime = 0; moveSound.play();
             setTimeout(() => cell.classList.remove('pop'), 300);
             if (checkWinner()) {
@@ -259,6 +323,19 @@
                 nextPlayer.textContent = `Next Player: ${playerNames[currentPlayer]}`;
             }
         }
+        // Update icons when selection changes
+        iconXSelect.addEventListener('change', function() {
+            icons.X = iconXSelect.value;
+            createBoard();
+        });
+        iconOSelect.addEventListener('change', function() {
+            icons.O = iconOSelect.value;
+            createBoard();
+        });
+
+        // Ensure icons are set on load
+        icons.X = iconXSelect.value;
+        icons.O = iconOSelect.value;
 
         function checkWinner() {
             const winningCombinations = [
