@@ -128,13 +128,39 @@
             box-shadow: 0 2px 8px rgba(56,142,60,0.18);
         }
         @media (max-width: 600px) {
+            #main-container {
+                padding: 0 2vw;
+            }
             #game-board {
-                grid-template-columns: repeat(3, 60px);
+                grid-template-columns: repeat(3, 1fr);
+                width: 98vw;
+                max-width: 320px;
+                min-width: 0;
             }
             .cell {
-                width: 50px;
-                height: 50px;
+                width: 28vw;
+                max-width: 90px;
+                min-width: 50px;
+                height: 28vw;
+                max-height: 90px;
+                min-height: 50px;
+                font-size: 7vw;
+            }
+            .restart-btn, #clear-score {
+                font-size: 13px;
+                padding: 7px 12px;
+                min-width: 90px;
+            }
+            #player-form input {
+                font-size: 14px;
+                padding: 7px 6px;
+                width: 32vw;
+                min-width: 70px;
+                max-width: 120px;
+            }
+            .scoreboard-label {
                 font-size: 16px;
+                padding: 6px 10px;
             }
         }
     </style>
@@ -142,6 +168,10 @@
 <body>
     <div id="main-container">
         <h1>Let's Play Tic-Tac-Toe, Anara!</h1>
+        <div id="mode-select" style="margin-bottom: 12px;">
+            <label><input type="radio" name="mode" value="pvp" checked> 2 Players</label>
+            <label style="margin-left:18px;"><input type="radio" name="mode" value="ai"> Play vs Computer</label>
+        </div>
         <form id="player-form" style="margin-bottom: 18px;">
             <input type="text" id="playerX" placeholder="Add Player 1's name" style="margin-right:8px;">
             <input type="text" id="playerO" placeholder="Add Player 2's name" style="margin-right:8px;">
@@ -173,14 +203,16 @@
         const scoreO = document.getElementById('score-o');
         const scoreXName = document.getElementById('score-x-name');
         const scoreOName = document.getElementById('score-o-name');
-        let playerNames = { X: 'Player 1 (X)', O: 'Player 2 (O)' };
-        let scores = { X: 0, O: 0 };
-        let currentPlayer = 'X';
-        let gameState = ['', '', '', '', '', '', '', '', ''];
-        let aiEnabled = false;
-        let gameActive = true;
-        let winSound = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3');
-        let moveSound = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b6bfa.mp3');
+    let playerNames = { X: 'Player 1 (X)', O: 'Player 2 (O)' };
+    let scores = { X: 0, O: 0 };
+    let currentPlayer = 'X';
+    let gameState = ['', '', '', '', '', '', '', '', ''];
+    let aiEnabled = false;
+    let gameActive = true;
+    let winSound = new Audio('https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3');
+    let moveSound = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b6bfa.mp3');
+    const modeSelect = document.getElementById('mode-select');
+    const modeRadios = modeSelect.querySelectorAll('input[name="mode"]');
 
         function createBoard() {
             board.innerHTML = '';
@@ -273,14 +305,38 @@
 
         restartButton.addEventListener('click', resetGame);
 
+
         playerForm.addEventListener('submit', function(e) {
             e.preventDefault();
             playerNames.X = playerXInput.value || 'Player 1 (X)';
-            playerNames.O = playerOInput.value || 'Player 2 (O)';
+            if (aiEnabled) {
+                playerNames.O = 'Computer (O)';
+            } else {
+                playerNames.O = playerOInput.value || 'Player 2 (O)';
+            }
             scoreXName.textContent = playerNames.X;
-            scoreOName.textContent = playerNames.O;
+            scoreOName.textContent = playerNames.O + (aiEnabled ? ' (AI)' : '');
             nextPlayer.textContent = `Next Player: ${playerNames[currentPlayer]}`;
             resetGame();
+        });
+
+        // Game mode selector logic
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                aiEnabled = (this.value === 'ai');
+                if (aiEnabled) {
+                    playerOInput.value = '';
+                    playerOInput.disabled = true;
+                    playerNames.O = 'Computer (O)';
+                    scoreOName.textContent = playerNames.O + ' (AI)';
+                } else {
+                    playerOInput.disabled = false;
+                    playerNames.O = playerOInput.value || 'Player 2 (O)';
+                    scoreOName.textContent = playerNames.O;
+                }
+                nextPlayer.textContent = `Next Player: ${playerNames[currentPlayer]}`;
+                resetGame();
+            });
         });
 
         // AI opponent (random move)
@@ -291,12 +347,7 @@
             makeMove(move, 'O');
         }
 
-        // Toggle AI with double-click on Player 2 (O) name
-        scoreOName.addEventListener('dblclick', function() {
-            aiEnabled = !aiEnabled;
-            scoreOName.textContent = playerNames.O + (aiEnabled ? ' (AI)' : '');
-            resetGame();
-        });
+    // Remove double-click AI toggle (now handled by mode selector)
 
         // Animation for moves
         const style = document.createElement('style');
